@@ -8,7 +8,7 @@ const Board = () => {
     <Container
       disableGutters
       maxWidth={false}
-      sx={{ height: '100vh', backgroundColor: 'primary.main' }}
+      sx={{ height: '100vh' }}
     >
       <AppBar/>
       <BoardBar/>
