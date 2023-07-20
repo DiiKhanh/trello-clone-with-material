@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Box, SvgIcon, Typography, Button, TextField, Badge, Tooltip } from '@mui/material';
 import AppsIcon from '@mui/icons-material/Apps';
 import { ReactComponent as TrelloIcon } from '~/assets/trello.svg';
-import ModeSelect from '../ModeSelect';
+import ModeSelect from '../ModeSelect/ModeSelect';
 import Workspaces from './Menus/Workspaces';
 import Recent from './Menus/Recent';
 import Starred from './Menus/Starred';
@@ -16,7 +16,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 
 const AppBar = () => {
-
   const [searchValue, setSearchValue] = useState('');
 
   return (
