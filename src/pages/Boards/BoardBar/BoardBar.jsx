@@ -10,6 +10,7 @@ import AddToDriveIcon from '@mui/icons-material/AddToDrive';
 import BoltIcon from '@mui/icons-material/Bolt';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import { capitalizeFirstLetter } from '~/utils/formatters';
 
 // style for component Chip
 const CHIP_STYLES = {
@@ -25,7 +26,7 @@ const CHIP_STYLES = {
   }
 };
 
-const BoardBar = () => {
+const BoardBar = ({ board }) => {
   return (
     <Box sx={{
       width: '100%',
@@ -41,11 +42,11 @@ const BoardBar = () => {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Chip
           sx={CHIP_STYLES}
-          icon={<DashBoardIcon />} label="DuyKhanh Workspace" clickable
+          icon={<DashBoardIcon />} label={board?.title} clickable
         />
         <Chip
           sx={CHIP_STYLES}
-          icon={<VpnLockIcon />} label="Public/Private" clickable
+          icon={<VpnLockIcon />} label={capitalizeFirstLetter(board?.type)} clickable
         />
         <Chip
           sx={CHIP_STYLES}
