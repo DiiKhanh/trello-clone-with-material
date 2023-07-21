@@ -12,13 +12,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ListCards from './ListCards/ListCards';
+import { mapOrder } from '~/utils/sorts';
 
-
-const Column = () => {
+const Column = ({ column }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
+  const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id');
   return (
     <Box sx={{
       minWidth: '300px',
@@ -37,7 +38,7 @@ const Column = () => {
         alignItems: 'center',
         justifyContent: 'space-between'
       }}>
-        <Typography variant='h6' sx={{ fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' }}>Column Title</Typography>
+        <Typography variant='h6' sx={{ fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' }}>{column?.title}</Typography>
         <Box>
           <Tooltip title='More options'>
             <ExpandMoreIcon
@@ -99,7 +100,7 @@ const Column = () => {
         </Box>
       </Box>
       {/* list */}
-      <ListCards />
+      <ListCards cards={orderedCards} />
       {/* footer */}
       <Box sx={{
         height: (theme) => theme.trelloCustom.columnFooterHeight,
