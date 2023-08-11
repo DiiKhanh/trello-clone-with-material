@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import ListColumns from './ListColumns/ListColumns';
 import { mapOrder } from '~/utils/sorts';
 import { DndContext, useSensor, useSensors, MouseSensor,
-  TouchSensor, DragOverlay, defaultDropAnimationSideEffects, closestCorners
+  TouchSensor, DragOverlay, defaultDropAnimationSideEffects, closestCorners,
+  pointerWithin, rectIntersection, getFirstCollision, closestCenter
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import Column from './ListColumns/Column/Column';
@@ -29,6 +30,8 @@ const BoardContent = ({ board }) => {
   const sensors = useSensors(mouseSensor, touchSensor);
   // state
   const [orderedColumns, setOrderedColumns] = useState([]);
+
+  const lastOverId = useRef(null);
 
   useEffect(() => {
     setOrderedColumns(mapOrder(board?.columns, board?.columnOrderIds, '_id'));
@@ -143,6 +146,7 @@ const BoardContent = ({ board }) => {
     setActiveDragItemData(null);
     setOldColumnDraggingCard(null);
   };
+
   const customDropAnimation = {
     sideEffects: defaultDropAnimationSideEffects({
       styles: {
@@ -153,12 +157,41 @@ const BoardContent = ({ board }) => {
     })
   };
 
+  const collisionDetectionStrategy = useCallback((args) => {
+
+    if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
+      return closestCorners({ ...args });
+    }
+
+    const pointerIntersections = pointerWithin(args);
+    const intersections = pointerIntersections?.length > 0 ?
+      pointerIntersections : rectIntersection(args);
+
+    let overId = getFirstCollision(intersections, 'id');
+    if (overId) {
+      const checkColumn = orderedColumns.find(c => c._id === overId);
+      if (checkColumn) {
+        overId = closestCenter({
+          ...args,
+          droppableContainers: args.droppableContainers.filter(c => {
+            return c.id !== overId && checkColumn?.cardOrderIds.includes(c.id);
+          })
+        })[0]?.id;
+      }
+      lastOverId.current = overId;
+      return [{ id: overId }];
+    }
+    return lastOverId.current ? [{ id: lastOverId.current }] : [];
+  }, [activeDragItemType, orderedColumns]);
+
   return (
     <DndContext onDragEnd={handleDragEnd}
       sensors={sensors}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
-      collisionDetection={closestCorners}
+      // collisionDetection={closestCorners}
+      // fix conflic between 2 colmun
+      collisionDetection={collisionDetectionStrategy}
     >
       <Box sx={{
         bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#34495e' : '#1976d2'),
